@@ -13,30 +13,19 @@ jobs:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Install Python 3.8.0
+    - name: Install Python 3.8.0 and Dependencies
       run: |
-        # Download the Python tarball
-        curl -L -o python-3.8.0-linux-20.04-x64.tar.gz https://github.com/actions/python-versions/releases/download/3.8.0-96748/python-3.8.0-linux-20.04-x64.tar.gz
+        # Update package list
+        sudo apt-get update
         
-        # Extract the tarball
-        tar -xzf python-3.8.0-linux-20.04-x64.tar.gz
+        # Install Python 3.8 and other required packages
+        sudo apt-get install -y python3.8 python3.8-venv python3.8-dev python3-pip
         
-        # Move the extracted directory to /usr/local
-        sudo mv python-3.8.0 /usr/local/
-        
-        # Create a symbolic link for python3.8
-        sudo ln -s /usr/local/python-3.8.0/bin/python3.8 /usr/bin/python3
-        
-        # Verify the Python installation
-        python3 --version
-
-    - name: Install pip and dependencies
-      run: |
         # Upgrade pip
-        python3 -m pip install --upgrade pip
+        python3.8 -m pip install --upgrade pip
         
         # Install dependencies from requirements.txt
-        pip install -r requirements.txt
+        python3.8 -m pip install -r requirements.txt
 
     - name: Build Static Site
       run: |
