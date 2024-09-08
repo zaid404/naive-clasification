@@ -1,39 +1,37 @@
-name: Deploy Static Site
+name: Deploy to GitHub Pages
 
 on:
   push:
     branches:
-      - main  # Adjust the branch name as needed
+      - main  # Trigger deployment on pushes to the main branch
 
 jobs:
   deploy:
-    runs-on: ubuntu-20.04  # Specify Ubuntu 20.04
-
+    runs-on: ubuntu-latest
+    
     steps:
     - name: Checkout code
-      uses: actions/checkout@v3
+      uses: actions/checkout@v2.3.3  # Using a specific version known to work
 
-    - name: Install Python 3.8.0 and Dependencies
-      run: |
-        # Update package list
-        sudo apt-get update
-        
-        # Install Python 3.8 and other required packages
-        sudo apt-get install -y python3.8 python3.8-venv python3.8-dev python3-pip
-        
-        # Upgrade pip
-        python3.8 -m pip install --upgrade pip
-        
-        # Install dependencies from requirements.txt
-        python3.8 -m pip install -r requirements.txt
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.8'  # Specify the Python version you want
 
-    - name: Build Static Site
+    - name: Install dependencies
       run: |
-        # Build your static site here, e.g., `npm run build` for a React app
-        echo "Static site build step here"
+        python -m pip install --upgrade pip
+        pip install -r requirements.txt
+
+    - name: Build static files
+      run: |
+        # Build your static files here if applicable
+        echo "Building static files..."
+        # Example command, adjust as necessary
+        # python build_static.py
 
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
+        github_token: ${{ secrets.PERSONAL_ACCESS_TOKEN }}  # Use PAT for deployment
         publish_dir: ./public  # Directory containing static files
