@@ -7,20 +7,35 @@ on:
 
 jobs:
   deploy:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04  # Specify Ubuntu 20.04
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Set up Python
-      uses: actions/setup-python@v3
-      with:
-        python-version: '3.8.0'  # Specify Python 3.8.0
-
-    - name: Install dependencies
+    - name: Install Python 3.8.0
       run: |
-        python -m pip install --upgrade pip
+        # Download the Python tarball
+        curl -L -o python-3.8.0-linux-20.04-x64.tar.gz https://github.com/actions/python-versions/releases/download/3.8.0-96748/python-3.8.0-linux-20.04-x64.tar.gz
+        
+        # Extract the tarball
+        tar -xzf python-3.8.0-linux-20.04-x64.tar.gz
+        
+        # Move the extracted directory to /usr/local
+        sudo mv python-3.8.0 /usr/local/
+        
+        # Create a symbolic link for python3.8
+        sudo ln -s /usr/local/python-3.8.0/bin/python3.8 /usr/bin/python3
+        
+        # Verify the Python installation
+        python3 --version
+
+    - name: Install pip and dependencies
+      run: |
+        # Upgrade pip
+        python3 -m pip install --upgrade pip
+        
+        # Install dependencies from requirements.txt
         pip install -r requirements.txt
 
     - name: Build Static Site
