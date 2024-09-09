@@ -1,33 +1,31 @@
-name: Deploy to GitHub Pages
+name: Run Flask App
 
 on:
   push:
     branches:
-      - main  # Your main branch
+      - main  # Pastikan untuk mengganti ini dengan branch yang relevan
 
 jobs:
-  deploy:
+  build-and-run-flask:
     runs-on: ubuntu-latest
 
     steps:
     - name: Checkout code
       uses: actions/checkout@v3
 
-    - name: Install dependencies (if applicable)
-      run: |
-        # Install any dependencies here if you are using a static site generator
-        # Example: npm install (if you're using Node.js)
-        echo "No dependencies"
-
-    - name: Build static files
-      run: |
-        # Replace this with your static site build command
-        echo "Building static site..."
-        # For example: npm run build if you have a build script
-        mkdir public  # Make sure the public directory exists
-
-    - name: Deploy to GitHub Pages
-      uses: peaceiris/actions-gh-pages@v3
+    - name: Set up Python 3.8
+      uses: actions/setup-python@v3
       with:
-        github_token: ${{ secrets.GITHUB_TOKEN }}
-        publish_dir: ./public  # Directory containing static files
+        python-version: '3.8'
+
+    - name: Install dependencies
+      run: |
+        python -m venv venv
+        source venv/bin/activate
+        pip install -r requirements.txt
+        pip install gunicorn  # Install Gunicorn untuk server WSGI
+
+    - name: Run Flask app
+      run: |
+        source venv/bin/activate
+        gunicorn --bind 0.0.0.0:5000 app6:app  # Menjalankan Flask menggunakan Gunicorn
